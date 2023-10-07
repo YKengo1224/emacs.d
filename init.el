@@ -1,356 +1,322 @@
-;;; init.el --- My init.el  -*- lexical-binding: t; -*-
+;;;
+;;; General
+;;;
 
-;; Copyright (C) 2020  Naoya Yamashita
+;;バックアップファイルをすべてこのディレクトリに作成するよう設定
+(setq backup-directory-alist
+      (cons (cons ".*" (expand-file-name "~/.emacs.d/backup-files")) 
+	    backup-directory-alist))
 
-;; Author: Naoya Yamashita <conao3@gmail.com>
-
-;; This program is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;; My init.el.
-
-;;; Code:
-
-;; this enables this running method
-;;   emacs -q -l ~/.debug.emacs.d/{{pkg}}/init.el
-(eval-and-compile
-  (when (or load-file-name byte-compile-current-file)
-    (setq user-emacs-directory
-          (expand-file-name
-           (file-name-directory (or load-file-name byte-compile-current-file))))))
-
-(eval-and-compile
-  (customize-set-variable
-   'package-archives '(("org"   . "https://orgmode.org/elpa/")
-                       ("melpa" . "https://melpa.org/packages/")
-                       ("gnu"   . "https://elpa.gnu.org/packages/")))
-  (package-initialize)
-  (unless (package-installed-p 'leaf)
-    (package-refresh-contents)
-    (package-install 'leaf))
-
-  (leaf leaf-keywords
-    :ensure t
-    :init
-    ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
-    (leaf hydra :ensure t)
-    (leaf el-get :ensure t)
-    (leaf blackout :ensure t)
-
-    :config
-    ;; initialize leaf-keywords.el
-    (leaf-keywords-init)))
-
-;; ここにいっぱい設定を書く
-
-
-;;warningを無視
-(setq warning-minimum-level :emergency)
+;;auto save ファイルをすべてこのディレクトリに作成するように設定
+(setq auto-save-file-name-transforms
+      `((".*",(expand-file-name "~/.emacs.d/auto-save-files/") t)))
 
 
 
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
 
-(leaf leaf
-  :config
-  (leaf leaf-convert :ensure t)
-  (leaf leaf-tree
-    :ensure t
-    :custom((imenu-list-size . 30)
-            (imenu-list-position . 'left))
-    )
-  )
 
+;;welcome screenを非表示
+(setq inhibit-startup-message t) 
+(mouse-wheel-mode t)
+;;ツールバーを非表示
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+;;括弧などのオートペアリングを有効
+(electric-pair-mode t)
+;;正規表現による置換をAlt+qにセット
+(global-set-key "\M-q" 'query-replace-regexp)
+;;tab -> space 4
+(setq-default tab-width 1 indent-tabs-mode nil)
+
+(if (not window-system) (menu-bar-mode 0))
+
+;;
+;;org-mode config
+;;
+(setq org-export-latex-coding-system 'utf-8)
+(setq org-export-latex-date-format "%Y-%m-%d")
+(setq org-export-latex-classes nil)
+(add-to-list 'org-export-latex-classes
+  '("jsarticle"
+    "\\documentclass[a4j]{jsarticle}"
+    ("\\section{%s}" . "\\section*{%s}")
+    ("\\subsection{%s}" . "\\subsection*{%s}")
+    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+    ("\\paragraph{%s}" . "\\paragraph*{%s}")
+    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+))
+(setq org-export-latex-packages-alist
+  '(("AUTO" "inputenc"  t)
+    ("T1"   "fontenc"   t)
+    ))
+;;; LaTeX 形式のファイル PDF に変換するためのコマンド
+(setq org-latex-pdf-process
+      '("platex %f"
+        "platex %f"
+        "bibtex %b"
+        "platex %f"
+        "platex %f"
+        "dvipdfmx %b.dvi"))
+;;;
+;;; Anthy on Emacs
+;;;日本語入力(aptでAnthyをインストールする必要あり)
+;; (setq default-input-method "japanese-egg-anthy")
+
+
+;;package
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			                      ("gnu" . "http://elpa.gnu.org/packages/")))
+(require 'package)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+
+(package-initialize)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(company-verilog fkycheck rustic lsp-ui cargo rust-mode company-irony irony verilog-ext package-utils php-mode all-the-icons eldoc-box which-key use-package mozc mew company eglot)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
+;;自動補完機能
+(require 'company)
+(global-company-mode 1)
+(setq company-backends (remove 'company-clang company-backends))
+(define-key company-active-map (kbd "C-n") #'company-select-next)
+(define-key company-active-map (kbd "C-p") #'company-select-previous)
+(define-key company-active-map (kbd "C-h") nil)
+(define-key company-active-map (kbd "C-S-h") #'company-show-doc-buffer)
+
+(setq company-transformers '(company-sort-by-backend-importance))
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 2)
+(setq company-selection-wrap-around t)
+(setq company-deabbrev-downcase nil)
+
+;;行番号を表示
+(global-display-line-numbers-mode)
+(setq display-line-numbers-widen t)
+(setq display-line-numbers-mode-start 3)
+
+(setq initial-scratch-message nil)
+
+
+;; mew default settings
+;; (setq mew-mail-domain-list '("pca.cis.nagasaki-u.ac.jp"))
+;; (let ((menu-bar (lookup-key global-map [menu-bar])))
+;;   (define-key-after (lookup-key menu-bar [tools]) [rmail]
+;;     '("Mew (read/write mail)" . mew)
+;;     [rmail]))
+;; (add-hook 'mew-draft-mode-hook
+;;           (lambda ()
+;;             (Set-Buffer-File-coding-system 'junet)))
+;; (setq mew-icon-directory "/opt/share/emacs/site-lisp/mew/etc/")
+;; (setq mew-smtp-server "pcamx.cis.nagasaki-u.ac.jp")
+;; (setq mew-mailbox-type 'mbox)
+;; (setq mew-mbox-command "incm")
+;; (setq mew-mbox-command-arg (concat "-d " (concat (getenv "HOME") "/.Maildir/")))
+
+;; yatex
+;; (setq auto-mode-alist
+;;   (cons (cons "\.tex$" 'yatex-mode) auto-mode-alist))
+;; (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
+;; (add-to-list 'load-path "/opt/share/emacs/site-lisp/yatex")
+;; (setq YaTeX-help-file "/opt/share/emacs/site-lisp/yatex/help/YATEXHLP.eng")
+(setq tex-command "platex")
+(setq dvi2-command "xdvi")
+(setq tex-pdfview-command "evince")
+
+;; ;;
+;; (autoload 'sfl-mode "sfl-mode-c" "SFL editing mode" t)
+;; (setq auto-mode-alist (cons (cons "\\.sfl" 'sfl-mode) auto-mode-alist))
+
+;;Mozcの設定(aptでemacs-mozc-binをインストールする必要あり)
+(require 'mozc)
+(setq default-input-method "japanese-mozc")
+(setq mozc-candidate-style 'echo-area)
+ (global-set-key "\C-o" 'toggle-input-method)
 
 ;;テーマの設定
-(leaf doom-themes
+(use-package doom-themes
   :ensure t
-  :init
-  (let ((custom--inhibit-theme-enable nil))
-    (unless (memq 'use-package custom-known-themes)
-      (deftheme use-package)
-      (enable-theme 'use-package)
-      (setq custom-enabled-themes (remq 'use-package custom-enabled-themes)))
-    (custom-theme-set-variables 'use-package
-				'(doom-themes-enable-italic t nil nil "Customized with use-package doom-themes")
-				'(doom-themes-enable-bold t nil nil "Customized with use-package doom-themes")))
-  (apply #'face-spec-set
-	 (backquote
-	  (doom-modeline-bar
-	   ((t
-	     (:background "#6272a4"))))))
-  :require t
+  :custom
+  (doom-themes-enable-italic t)
+  (doom-themes-enable-bold t)
+  :custom-face
+  (doom-modeline-bar ((t (:background "#6272a4"))))
   :config
   (load-theme 'doom-dracula t)
   (doom-themes-neotree-config)
   (doom-themes-org-config))
 
-
-(leaf macrostep
+(use-package doom-modeline
   :ensure t
-  :bind (("C-c e" . macrostep-expand)))
+  :hook
+  (after-init . doom-modeline-mode)
+)
 
-
-;;バックアップファイルをすべてこのディレクトリに作成するよう設定
-(leaf files
-  :doc "file input and output commands for Emacs"
-  :tag "builtin"
-  :custom `((auto-save-timeout . 15)
-            (auto-save-interval . 60)
-            ;; (auto-save-file-name-transforms . '((".*" ,(locate-user-emacs-file "auto-save-files") t)))
-            ;; (backup-directory-alist . '((".*" . ,(locate-user-emacs-file "backup-files"))
-            (auto-save-file-name-transforms . '((".*" ,"~/.eamcs.d/auto-save-files" t)))
-            (backup-directory-alist . '((".*" . ,"~/.emacs.d/backup-files")
-
-                                        (,tramp-file-name-regexp . nil)))
-            (version-control . t)
-            (delete-old-versions . t)))
-
-
-;; ;;welcome screenを非表示
-;; (leaf leaf-convert
-;;   :setq ((inhibit-startup-message . t)))(mouse-wheel-mode t)
-;; ;;ツールバーを非表示
-;; (leaf leaf-convert
-;;   :config
-;;   (tool-bar-mode 0)
-;;   (menu-bar-mode 0)
-;;   (electric-pair-mode t))
-
-;;welcome screenを非表示
-;;ツールバーを非表示
-;;括弧などのオートペアリングを有効
-;;正規表現による置換をAlt+qにセット
-;;tab -> space 4
-;;行番号を表示
-(leaf leaf-convert
-  :setq ((inhibit-startup-message . t)
-         (display-line-numbers-widen . t)
-	 (display-line-numbers-mode-start . 3)
-	 (initial-scratch-message))
-  :setq-default ((tab-width . 1)
-		 (indent-tabs-mode))
-  :config
-  (mouse-wheel-mode t)
-  (tool-bar-mode 0)
-  (menu-bar-mode 0)
-  (electric-pair-mode t)
-  (global-display-line-numbers-mode))
+;; (use-package ace-window
+;;   :ensure t
+;;   :functions hydra-frame-window/body
+;;   :bind
+;;   ("C-M-o" . hydra-frame-window/body)
+;;   :custom
+;;   (aw-keys '(?j ?k ?l ?i ?o ?h ?y ?u ?p))
+;;   :custom-face
+;;   (aw-leading-char-face ((t (:height 4.0 :foreground "#f1fa8c"))))
+;;   )
+ 
 
 
 
+;;括弧のハイライト表示
+(use-package paren
+  :ensure nil
+  :hook
+  (after-init . show-paren-mode)
+  :custom-face
+  (show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c"))))
+  :custom
+  (show-paren-style 'mixed)
+  (show-paren-when-point-inside-paren t)
+  (show-paren-when-point-in-periphery t))
 
-
-;;Out revert
-(leaf autorevert
-  :doc "revert buffers when files on disk change"
-  :tag "builtin"
-  :custom ((auto-revert-interval . 1))
-  :global-minor-mode global-auto-revert-mode)
-
-
-;;cc-mode
-(leaf cc-mode
-  :doc "major mode for editing C and similar languages"
-  :tag "builtin"
-  :defvar (c-basic-offset)
-  :bind (c-mode-base-map
-         ("C-c c" . compile))
-  :mode-hook
-  (c-mode-hook . ((c-set-style "bsd")
-                  (setq c-basic-offset 4)))
-  (c++-mode-hook . ((c-set-style "bsd")
-                    (setq c-basic-offset 4))))
-
-
-;;タブ補完強化
-(leaf ivy
-  :doc "Incremental Vertical completYon"
-  :req "emacs-24.5"
-  :tag "matching" "emacs>=24.5"
-  :url "https://github.com/abo-abo/swiper"
-  :emacs>= 24.5
+(use-package which-key
   :ensure t
-  :blackout t
-  :leaf-defer nil
-  :custom ((ivy-initial-inputs-alist . nil)
-           (ivy-use-selectable-prompt . t))
-  :global-minor-mode t
-  :config
-  (leaf swiper
-    :doc "Isearch with an overview. Oh, man!"
-    :req "emacs-24.5" "ivy-0.13.0"
-    :tag "matching" "emacs>=24.5"
-    :url "https://github.com/abo-abo/swiper"
-    :emacs>= 24.5
-    :ensure t
-    :bind (("C-s" . swiper)))
+  :diminish which-key-mode
+  :hook (after-init . which-key-mode))
 
-  (leaf counsel
-    :doc "Various completion functions using Ivy"
-    :req "emacs-24.5" "swiper-0.13.0"
-    :tag "tools" "matching" "convenience" "emacs>=24.5"
-    :url "https://github.com/abo-abo/swiper"
-    :emacs>= 24.5
-    :ensure t
-    :blackout t
-    :bind (("C-S-s" . counsel-imenu)
-           ("C-x C-r" . counsel-recentf))
-    :custom `((counsel-yank-pop-separator . "\n----------\n")
-              (counsel-find-file-ignore-regexp . ,(rx-to-string '(or "./" "../") 'no-group)))
-    :global-minor-mode t))
-
-(leaf prescient
-  :doc "Better sorting and filtering"
-  :req "emacs-25.1"
-  :tag "extensions" "emacs>=25.1"
-  :url "https://github.com/raxod502/prescient.el"
-  :emacs>= 25.1
+(use-package eldoc-box
   :ensure t
-  :custom ((prescient-aggressive-file-save . t))
-  :global-minor-mode prescient-persist-mode)
-  
-(leaf ivy-prescient
-  :doc "prescient.el + Ivy"
-  :req "emacs-25.1" "prescient-4.0" "ivy-0.11.0"
-  :tag "extensions" "emacs>=25.1"
-  :url "https://github.com/raxod502/prescient.el"
-  :emacs>= 25.1
-  :ensure t
-  :after prescient ivy
-  :custom ((ivy-prescient-retain-classic-highlighting . t))
-  :global-minor-mode t)
+  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 
+(use-package all-the-icons
+  :ensure t)
 
-(leaf magit
-  :doc "A Git porcelain inside Emacs."
-  :req "emacs-25.1" "compat-29.1.3.4" "dash-20221013" "git-commit-20230101" "magit-section-20230101" "seq-2.24" "transient-20230201" "with-editor-20230118"
-  :tag "vc" "tools" "git" "emacs>=25.1"
-  :url "https://github.com/magit/magit"
-  :added "2023-10-05"
-  :emacs>= 25.1
-  :ensure t
-  :after compat git-commit magit-section with-editor)
-
-;;eglot
-(leaf eglot
-  :doc "The Emacs Client for LSP servers"
-  :tag "builtin"
-  :added "2023-10-05"  
+;;;;;;;;;;
+;;;php
+(use-package php-mode
   :ensure t
   :config
-  (add-hook 'cc-mode-hook 'eglot-ensure)
-  (add-hook 'rust-mode-hook 'eglot-ensure)
-  ;; (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
-  ;; (define-key eglot-mode-map (kbd "C-c e n") 'eglot-rename)
+  (setq php-mode-coding-style 'psr2)
+  (setq php-mode-indent-num-args 4)
+  (setq php-mode-indent-line t)
+  (setq php-mode-require-semi nil)
   )
 
 
 
+;; (require 'eglot)
+;; (add-hook 'c-mode-hook #'eglot-ensure)
+;; (use-package eglot
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'eglot-server-programs '(c++-mode . ("ccls")))
+;;   (add-to-list 'eglot-server-programs '(rustic-mode . ("rust-analyzer")))
+;;   (add-hook 'c++-mode-hook 'eglot-ensure)
+;;   (add-hook 'rustic-mode-hook 'eglot-ensure)
+;;   (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
+;;   (define-key eglot-mode-map (kbd "C-c e n") 'eglot-rename)  
+;;   )
 
-(leaf flycheck
-  :doc "On-the-fly syntax checking"
-  :req "dash-2.12.1" "pkg-info-0.4" "let-alist-1.0.4" "seq-1.11" "emacs-24.3"
-  :tag "minor-mode" "tools" "languages" "convenience" "emacs>=24.3"
-  :url "http://www.flycheck.org"
-  :emacs>= 24.3
+;;fkycheck
+(use-package flycheck
   :ensure t
-  :bind (("M-n" . flycheck-next-error)
-         ("M-p" . flycheck-previous-error))
-  :global-minor-mode global-flycheck-mode)
-
-
-(leaf company
-  :doc "Modular text completion framework"
-  :req "emacs-24.3"
-  :tag "matching" "convenience" "abbrev" "emacs>=24.3"
-  :url "http://company-mode.github.io/"
-  :emacs>= 24.3
-  :ensure t
-  :blackout t
-  :leaf-defer nil
-  :bind ((company-active-map
-          ("M-n" . nil)
-          ("M-p" . nil)
-          ("C-s" . company-filter-candidates)
-          ("C-n" . company-select-next)
-          ("C-p" . company-select-previous)
-          ("<tab>" . company-complete-selection))
-         (company-search-map
-          ("C-n" . company-select-next)
-          ("C-p" . company-select-previous)))
-  :custom ((company-idle-delay . 0)
-           (company-minimum-prefix-length . 1)
-           (company-transformers . '(company-sort-by-occurrence)))
-  :global-minor-mode global-company-mode)
-
-
-(leaf company-c-headers
-  :doc "Company mode backend for C/C++ header files"
-  :req "emacs-24.1" "company-0.8"
-  :tag "company" "development" "emacs>=24.1"
-  :added "2020-03-25"
-  :emacs>= 24.1
-  :ensure t
-  :after company
-  :defvar company-backends
   :config
-  (add-to-list 'company-backends 'company-c-headers))
+  (global-flycheck-mode t)
+  )
 
 
-;;;;rust config
-
-(defun my/find-rust-project-root (dir)                                                                           
-   (when-let ((root (locate-dominating-file dir "Cargo.toml")))                                                         
-     (list 'vc 'Git root)))
-
-(defun my/rust-mode-hook ()
-  (setq-local project-find-functions (list #'my/find-rust-project-root)))
-
-(add-hook 'rust-mode-hook #'my/rust-mode-hook)
+;;flymake
+;; (use-package flymake
+;;   :init
+;;   (add-hook 'c-mode-common-hook 'flymake-mode)
+;;   :commands
+;;   flymake-mode
+;;  )
 
 
-(leaf leaf-convert
+;; setup Rust development
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+
+(use-package rust-mode
+  :ensure t
+  :custom rust-format-on-save t)
+(use-package cargo
+  :ensure t
+  :hook (rust-mode . cargo-minor-mode))
+
+
+(use-package rustic
+  :ensure t
+  
+ )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;#lsp
+
+(use-package lsp-mode
+  :ensure t
+  :init (yas-global-mode)
+  :hook((verilog-mode c-mode c++-mode rust-mode) . lsp)
+  :bind("C-c h" . lsp-describe-thing-at-point)
+  :custom
+  (lsp-rust-server 'rust-analyzer)
   :config
-  (leaf rust-mode
-    :ensure t
-    :init
-    (let ((custom--inhibit-theme-enable nil))
-      (unless (memq 'use-package custom-known-themes)
-        (deftheme use-package)
-        (enable-theme 'use-package)
-        (setq custom-enabled-themes (remq 'use-package custom-enabled-themes)))
-      (custom-theme-set-variables 'use-package
-                                  '(rust-format-on-save t nil nil "Customized with use-package rust-mode")))
-    :require t)
-
-  (leaf cargo
-    :ensure t
-    :commands cargo-minor-mode
-    :hook ((rust-mode-hook . cargo-minor-mode)))
-
-  (leaf rustic
-    :ensure t
-    :require t))
-;;;;;
+  (setq lsp-clients-clangd-executable "ccls")
+  )
+(use-package lsp-ui
+  :ensure t)
 
 
 
-(provide 'init)
 
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 
-;;; init.el ends here
+;; Add this after your current company configuration
+;; (use-package company-verilog
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'company-backends 'company-verilog))
+
+
+(use-package verilog-mode
+  :ensure t
+  :mode ("\\.v\\'" "\\.sv\\'")
+  :hook (verilog-mode . my-verilog-mode-hook)
+  :config
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("svls"))
+		    :major-modes '(verilog-mode)
+		    :priority -1
+		    ))
+  (setq verilog-auto-newline t
+        verilog-tab-always-indent t
+        verilog-indent-level 3
+        verilog-indent-level-behavioral 3
+        verilog-indent-level-declaration 3
+        verilog-indent-level-module 3)
+  (defun my-verilog-mode-hook ()
+    (font-lock-mode 1)
+    (setq indent-tabs-mode nil)))
+
+
+;;;;;setup maxima
+ (add-to-list 'load-path "/usr/share/emacs/site-lisp/maxima/")
+ (autoload 'maxima-mode "maxima" "Maxima mode" t)
+ (autoload 'imaxima "imaxima" "Frontend for maxima with Image support" t)
+ (autoload 'maxima "maxima" "Maxima interaction" t)
+ (autoload 'imath-mode "imath" "Imath mode for math formula input" t)
+ (setq imaxima-use-maxima-mode-flag t)
+ (add-to-list 'auto-mode-alist '("\\.ma[cx]\\'" . maxima-mode))
