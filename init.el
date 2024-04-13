@@ -58,7 +58,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(which-key doom-modeline use-package mozc mew company eglot)))
+   '(swiper which-key doom-modeline use-package mozc mew company eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -133,4 +133,18 @@
   )
 
 
+;;検索機能の強化
+(use-package swiper
+  :ensure t
+  :config
+  (defun isearch-forward-or-swiper (use-swiper)
+    (interactive "p")
+    ;; (interactive "P") ;; 大文字のPだと，C-u C-sでないと効かない
+    (let (current-prefix-arg)
+      (call-interactively (if use-swiper 'swiper 'isearch-forward))))
+  (global-set-key (kbd "C-s") 'isearch-forward-or-swiper)  
+  )
+(use-package ivy
+  :ensure t
+ )
 
