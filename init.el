@@ -68,11 +68,20 @@
 
 
 ;;Mozcの設定(aptでemacs-mozc-binをインストールする必要あり)
-(require 'mozc)
+;; (require 'mozc)
+;; (setq default-input-method "japanese-mozc")
+;; (setq mozc-candidate-style 'echo-area)
+;; (global-set-key "\C-o" 'toggle-input-method)
+(use-package mozc
+  :ensure t
+  )
+(set-language-environment "Japanese")
 (setq default-input-method "japanese-mozc")
-(setq mozc-candidate-style 'echo-area)
+(prefer-coding-system 'utf-8)
+(use-package mozc-popup
+  :ensure t
+  )
 (global-set-key "\C-o" 'toggle-input-method)
-
 
 ;; テーマの設定
 (use-package doom-themes
