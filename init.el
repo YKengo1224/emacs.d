@@ -57,7 +57,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(doom-modeline use-package mozc mew company eglot)))
+ '(package-selected-packages
+   '(which-key doom-modeline use-package mozc mew company eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -86,9 +87,41 @@
              (doom-themes-neotree-config)
              (doom-themes-org-config)
              )
+;;モードラインの設定
 (use-package doom-modeline
-             :ensure t
-             :hook
-             (after-init . doom-modeline-mode)
-             )
+  :ensure t
+  :custom
+  (doom-modeline-buffer-file-name-style 'truncate-with-project)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon nil)
+  (doom-modeline-minor-modes nil)
+  :hook
+  (after-init . doom-modeline-mode)
+  :config
+  (line-number-mode 0)
+  (column-number-mode 0))
+
+
+;;括弧のハイライト表示
+(use-package paren
+  :ensure nil
+  :hook
+  (after-init . show-paren-mode)
+  :custom-face
+  (show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c"))))
+  :custom
+  (show-paren-style 'mixed)
+  (show-paren-when-point-inside-paren t)
+  (show-paren-when-point-in-periphery t)  
+  )
+
+;;次のキー候補を表示
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :hook
+  (after-init . which-key-mode)
+  )
+
+
 
