@@ -1,7 +1,10 @@
-;;;
+;;; package --- Summary
+;;; Commentary:
 ;;; General
 ;;;
 
+
+;;; Code:
 ;;バックアップファイルをすべてこのディレクトリに作成するように設定
 (setq backup-directory-alist
       (cons (cons ".*" (expand-file-name "~/.emacs.d/backup-files"))
@@ -203,6 +206,29 @@
   :ensure t
   )
 
+;;日本語をローマ字で検索可能にする
+;; (use-package migemo
+;;   :ensure t
+;;   :config
+;;   ;; C/Migemo を使う場合は次のような設定を .emacs に加えます．
+;;   (setq migemo-command "cmigemo")
+;;   (setq migemo-options '("-q" "--emacs" "-i" "\a"))
+;;   ;(setq migemo-dictionary "/usr/local/Cellar/cmigemo/20110227/share/migemo/utf-8/migemo-dict")  ;; 各自の辞書の在り処を指示
+;;   (setq migemo-user-dictionary nil)
+;;   (setq migemo-regex-dictionary nil)
+;;   ;; charset encoding
+;;   (setq migemo-coding-system 'utf-8-unix))
+
+;; (use-package avy-migemo
+;;   :ensure t
+;;   :config
+;;   (avy-migemo-mode 1)
+;;   (setq avy-timeout-seconds nil)
+;;   (require 'avy-migemo-e.g.swiper)
+;;   (global-set-key (kbd "C-M-;") 'avy-migemo-goto-char-timer)
+;;   ;;  (global-set-key (kbd "M-g m m") 'avy-migemo-mode)
+;;   )
+
 ;;emacsclient(いるかどうかわからない)
 (use-package server
   :config
@@ -248,6 +274,7 @@
   (setq-default neo-keymap-style 'concize)
   :config
   (setq neo-create-file-auto-open t)
+  (setq neo-show-hidden-files t)
   (setq neo-theme (if (display-graphic-p) 'icon 'arrow))
   (bind-key [f8] 'neotree-toggle)
   )
@@ -261,9 +288,11 @@
   )
 
 
-;;;;;;;;;;;;;;;;;;;;;
-;;;;coding setting;;;
-;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;coding setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;補完機能
 (use-package company
@@ -325,3 +354,14 @@
   :ensure t)
 
 
+
+
+;; 校正ツール
+(use-package flycheck
+  :ensure t
+  :config
+  (global-flycheck-mode t)
+  )
+
+(provide 'init)
+;;; init.el ends here
