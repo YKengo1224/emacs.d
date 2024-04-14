@@ -375,9 +375,15 @@
 (use-package eglot
   :ensure t
   :config
+  (add-to-list 'eglot-server-programs '(c-mode "ccls"))
+  (add-to-list 'eglot-server-programs '(c++-mode "ccls"))
   (add-to-list 'eglot-server-programs '(python-mode "pylsp"))
   (add-to-list 'eglot-server-programs '(rustic "rust-analyzer"))
-  )
+  :hook
+  (python-mode . eglot-ensure)
+  (c-mode . eglot-ensure)
+  (c++-mode . eglot-ensure)
+  ) 
 
 ;;校正
 (use-package flymake
@@ -404,12 +410,48 @@
   (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode)
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
+;;c setting
+;;c言語の補完
+(use-package irony
+  :ensure t
+  :defer t
+  :commands irony-mode
+  :init
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'c++-mode-hook 'irony-mode)
+  :config
+  ;; C言語用にコンパイルオプションを設定する.
+  (add-hook 'c-mode-hook
+            '(lambda ()
+               (setq irony-additional-clang-options '("-std=c11" "-Wall" "-Wextra"))))
+  ;; C++言語用にコンパイルオプションを設定する.
+  (add-hook 'c++-mode-hook
+            '(lambda ()
+               (setq irony-additional-clang-options '("-std=c++14" "-Wall" "-Wextra"))))
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+  ;; Windows環境でパフォーマンスを落とす要因を回避.
+  (when (boundp 'w32-pipe-read-delay)
+    (setq w32-pipe-read-delay 0))
+  ;; バッファサイズ設定(default:4KB -> 64KB)
+  (when (boundp 'w32-pipe-buffer-size)
+    (setq irony-server-w32-pipe-buffer-size (* 64 1024)))
+  )
+
+(use-package company-irony
+  :ensure t
+  :defer t
+  :config
+  ;; companyの補完のバックエンドにironyを使用する.
+  (add-to-list 'company-backends '(company-irony-c-headers company-irony))
+  )
+
+
+
+
 
 ;;python setting
 (use-package python-mode
   :ensure nil
-  :hook
-  (python-mode . eglot-ensure)
   )
 
 
