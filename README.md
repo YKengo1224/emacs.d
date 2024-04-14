@@ -1,0 +1,1 @@
+M-x straight-freeze-versionsでlockファイルを生成
