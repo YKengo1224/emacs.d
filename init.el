@@ -357,11 +357,59 @@
 
 
 ;; 校正ツール
-(use-package flycheck
-  :ensure t
-  :config
-  (global-flycheck-mode t)
-  )
+;; (use-package flycheck
+;;   :ensure t
+;;   :config
+;;   (global-flycheck-mode t)
+;;   )
 
 (provide 'init)
 ;;; init.el ends here
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;LSP setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(use-package eglot
+  :ensure t
+  :config
+  (add-to-list 'eglot-server-programs '(python-mode "pylsp"))
+  )
+
+;;校正
+(use-package flymake
+  :ensure t
+  :bind
+  (nil
+   :map flymake-mode-map
+   ("C-c C-p" . flymake-goto-prev-error)
+   ("C-c C-n" . flymake-goto-prev-error)
+   )
+  :init
+  (add-hook 'python-mode-common-hook 'flymake-mode)
+  (global-company-mode)
+  :commands
+  flymake-mode
+  )
+
+
+;;エラー表示をカーソル位置に表示
+(use-package flymake-diagnostic-at-point
+  :ensure t
+  :after flymake
+  :config
+  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode)
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
+
+
+;;python setting
+(use-package python-mode
+  :ensure nil
+  :hook
+  (python-mode . eglot-ensure)
+  )
+
+
+;;rust setting
