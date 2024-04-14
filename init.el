@@ -276,7 +276,7 @@
   (setq neo-create-file-auto-open t)
   (setq neo-show-hidden-files t)
   (setq neo-theme (if (display-graphic-p) 'icon 'arrow))
-  (bind-key [f8] 'neotree-toggle)
+  (bind-key "C-q" 'neotree-toggle)
   )
 
 ;;行末、行頭への移動を拡張
