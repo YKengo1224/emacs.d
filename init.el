@@ -163,4 +163,20 @@
     (server-start))
   )
 
+;;現在行を強調表示
+(use-package hl-line
+  :init
+  (global-hl-line-mode +1)
+  )
 
+;;他プロセスの編集をバッファに反映
+(use-package autorevert
+  :init
+  (global-auto-revert-mode +1)
+  )
+
+;; ;;パッケージを自動的に更新(package-upgrade-all機能はバグがある)
+;; (use-package auto-package-update
+;;   :config
+;;   (setq auto-package-update-interval 1)
+;;   (auto-package-update-maybe))
