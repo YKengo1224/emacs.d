@@ -12,22 +12,23 @@
       `((".*",(expand-file-name "~/.emacs.d/auto-save-files/") t)))
 
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-
-
 ;;welcom screenを非表示
 (setq inhibit-startup-message t)
 (mouse-wheel-mode t)
+
 ;;ツールバーを非表示
 (tool-bar-mode 0)
 (menu-bar-mode 0)
+
+;;画面最大化
+(push '(fullscreen . maximized) default-frame-alist)
+
 ;;括弧などのオートペアリングを有効
 (electric-pair-mode t)
+
 ;;正規表現による置換をAlt+qにセット
 (global-set-key "\M-q" 'query-replace-regexp)
+
 ;;tab -> space 4
 (setq-default tab-width 1 indent-tabs-mode nil)
 
@@ -40,6 +41,11 @@
 
 (setq initial-scratch-message nil)
 
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
 
 
 ;;package
@@ -70,7 +76,7 @@
 ;;Mozcの設定(aptでemacs-mozc-binをインストールする必要あり)
 ;; (require 'mozc)
 ;; (setq default-input-method "japanese-mozc")
-;; (setq mozc-candidate-style 'echo-area)
+;; (setq mozc-candidat-style 'echo-area)
 ;; (global-set-key "\C-o" 'toggle-input-method)
 (use-package mozc
   :ensure t
@@ -132,6 +138,8 @@
   (after-init . which-key-mode)
   )
 
+(use-package all-the-icons
+  :if(display-graphic-p))
 
 ;;検索機能の強化
 (use-package swiper
@@ -146,5 +154,13 @@
   )
 (use-package ivy
   :ensure t
- )
+  )
+
+;;emacsclient(いるかどうかわからない)
+(use-package server
+  :config
+  (unless (server-running-p)
+    (server-start))
+  )
+
 
