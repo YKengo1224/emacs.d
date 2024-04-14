@@ -64,7 +64,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(swiper which-key doom-modeline use-package mozc mew company eglot)))
+   '(neotree auto-package-update all-the-icons highlight-indent-guides swiper which-key doom-modeline use-package mozc mew company eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -139,7 +139,8 @@
   )
 
 (use-package all-the-icons
-  :if(display-graphic-p))
+  :ensure t
+  :if (display-graphic-p))
 
 ;;検索機能の強化
 (use-package swiper
@@ -175,8 +176,32 @@
   (global-auto-revert-mode +1)
   )
 
-;; ;;パッケージを自動的に更新(package-upgrade-all機能はバグがある)
-;; (use-package auto-package-update
-;;   :config
-;;   (setq auto-package-update-interval 1)
-;;   (auto-package-update-maybe))
+;;インデントの位置を強調表示
+(use-package highlight-indent-guides
+  :ensure t
+  :delight
+  :hook ((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode)
+  :custom
+  (highlight-indent-guides-method  'character)
+  (highlight-indent-guides-auto-enabled t)
+  (highlight-indent-guides-responsive t)
+  (highlight-indent-guides-character ?|)
+  )
+
+;;パッケージを自動的に更新(package-upgrade-all機能はバグがある)
+(use-package auto-package-update
+  :ensure t
+  :config
+  (setq auto-package-update-interval 1)
+  (auto-package-update-maybe))
+
+;;neotree(ファイルブラウザを表示)
+(use-package neotree
+  :ensure t
+  :init
+  (setq-default neo-keymap-style 'concize)
+  :config
+  (setq neo-create-file-auto-open t)
+  (setq neo-theme (if (display-graphic-p) 'icon 'arrow))
+  (bind-key [f8] 'neotree-toggle)
+  )
