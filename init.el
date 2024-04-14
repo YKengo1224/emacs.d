@@ -356,12 +356,12 @@
 
 
 
-;; 校正ツール
-;; (use-package flycheck
-;;   :ensure t
-;;   :config
-;;   (global-flycheck-mode t)
-;;   )
+;;校正ツール
+(use-package flycheck
+  :ensure t
+  :config
+  (global-flycheck-mode t)
+  )
 
 (provide 'init)
 ;;; init.el ends here
@@ -376,6 +376,7 @@
   :ensure t
   :config
   (add-to-list 'eglot-server-programs '(python-mode "pylsp"))
+  (add-to-list 'eglot-server-programs '(rustic "rust-analyzer"))
   )
 
 ;;校正
@@ -413,3 +414,10 @@
 
 
 ;;rust setting
+(use-package rustic
+  :ensure t
+  :custom
+  (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
+
+(setq rustic-lsp-client 'eglot)
+(add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
