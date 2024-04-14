@@ -47,6 +47,9 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;package config
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;package
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -56,6 +59,49 @@
 (require 'package)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;staraight use-packageの設定
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; 何も考えず公式のREADMEからコピペすればいいコード
+;; straight.el自身のインストールと初期設定を行ってくれる
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq package-enable-at-startup nil)
+
+
+;; use-packageをインストールする
+(straight-use-package 'use-package)
+
+;; オプションなしで自動的にuse-packageをstraight.elにフォールバックする
+;; 本来は (use-package hoge :straight t) のように書く必要がある
+(setq straight-use-package-by-default t)
+
+;; ;; init-loaderをインストール&読み込み
+;; (use-package init-loader
+;;   :ensure t
+;;   )
+
+;; ;; ~/.emacs.d/init/ 以下のファイルを全部読み込む
+;; (init-loader-load "~/.emacs.d/init")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (package-initialize)
 (custom-set-variables
@@ -64,7 +110,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(mwim neotree auto-package-update all-the-icons highlight-indent-guides swiper which-key doom-modeline use-package mozc mew company eglot)))
+   '(company-statistics mwim neotree auto-package-update all-the-icons highlight-indent-guides swiper which-key doom-modeline use-package mozc mew company eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -213,3 +259,69 @@
   (("C-a" . mwim-beginning-of-code-or-line)
    ("C-e" . mwim-end-of-code-or-line))
   )
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;;;;coding setting;;;
+;;;;;;;;;;;;;;;;;;;;;
+
+;;補完機能
+(use-package company
+  :ensure t
+  :after company-statistics
+  :bind(
+        ("M-<tab>" . company-complete)  ;;Tabで自動補完を起動
+        :map company-active-map
+        ;;C-n,C-pで補完候補を移動
+        ("M-n" . nil)
+        ("M-p" . nil)
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous)
+        ("C-s" . company-filter-candidates)
+        :map company-search-map
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous)        
+        )
+  :init
+  (global-company-mode) ;; 全部バッファで有効
+  :config
+  (define-key emacs-lisp-mode-map (kbd "C-M-i") nil) ;; CUI版のためにemacs-lisp-modeでバインドされるC-M-iをアンバインド
+  (global-set-key (kbd "C-M-i") 'company-complete)   ;; CUI版ではM-<tab>はC-M-iに変換されるのでそれを利用
+  (setq completion-ignore-case t)
+  (setq company-idle-delay 0)                    ;; 待ち時間を0秒にする
+  (setq company-minimum-prefix-length 2)         ;; 補完できそうな文字が2文字以上入力されたら候補を表示
+  (setq company-selection-wrap-around t)         ;; 候補の一番下でさらに下に行こうとすると一番上に戻る
+  (setq company-transformers '(company-sort-by-occurrence company-sort-by-backend-importance)) ;; 利用頻度が高いものを候補の上に表示する
+  )
+
+;;補完候補を少し変更(いい感じに)
+(use-package company-statistics
+  :ensure t
+  :init
+  (company-statistics-mode)
+  )
+
+;;補完候補の絞り込みを拡張
+(use-package company-dwim
+  :straight '(company-dwim
+              :type git
+              :host github
+              :repo "zk-phi/company-dwim")
+  :ensure t
+  :init
+  (define-key company-active-map (kbd "TAB") 'company-dwim)
+  (setq company-frontends
+      '(company-pseudo-tooltip-unless-just-one-frontend
+        company-dwim-frontend
+        company-echo-metadata-frontend))
+  )
+
+;;カーソルがどこにあっても補完可能に
+(use-package company-anywhere
+  :straight '(company-anywhere
+              :type git
+              :host github
+              :repo "zk-phi/company-anywhere")
+  :ensure t)
+
+
