@@ -113,7 +113,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(company-statistics mwim neotree auto-package-update all-the-icons highlight-indent-guides swiper which-key doom-modeline use-package mozc mew company eglot)))
+   '(company-statistics mwim neotree auto-package-update all-the-icons highlight-indent-guides swiper which-key doom-modeline use-package mozc mew company eglot))
+ '(verilog-ext-formatter-column-limit 100)
+ '(verilog-ext-formatter-indentation-spaces 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -379,6 +381,7 @@
   (add-to-list 'eglot-server-programs '(c++-mode "ccls"))
   (add-to-list 'eglot-server-programs '(python-mode "pylsp"))
   (add-to-list 'eglot-server-programs '(rustic "rust-analyzer"))
+  (add-to-list 'eglot-server-programs '(verilog-mode "svls"))
   :hook
   (python-mode . eglot-ensure)
   (c-mode . eglot-ensure)
@@ -396,7 +399,7 @@
    )
   :init
   (add-hook 'python-mode-common-hook 'flymake-mode)
-  (global-company-mode)
+  (global-flymake-mode t)
   :commands
   flymake-mode
   )
@@ -463,3 +466,75 @@
 
 (setq rustic-lsp-client 'eglot)
 (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
+
+
+
+
+(use-package verilog-mode
+  :ensure t)
+
+;;https://github.com/gmlarumbe/verilog-ts-mode
+;;M-x で
+(use-package verilog-ts-mode
+  :ensure t
+  )
+(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
+
+
+;;https://github.com/gmlarumbe/verilog-ext
+(use-package verilog-ext
+  :ensure t
+  :hook ((verilog-mode . verilog-ext-mode))
+  :init
+  ;; Can also be set through `M-x RET customize-group RET verilog-ext':
+  ;; Comment out/remove the ones you do not need
+  (setq verilog-ext-feature-list
+        '(font-lock
+          xref
+          capf
+          hierarchy
+          eglot
+          ;lsp
+          ;lsp-bridge
+          ;lspce
+          flycheck
+          beautify
+          navigation
+          template
+          formatter
+          compilation
+          imenu
+          which-func
+          hideshow
+          typedefs
+          time-stamp
+          block-end-comments
+          ports))
+  :config
+  (verilog-ext-eglot-set-server 've-svls) ;'eglot' config
+  (verilog-ext-mode-setup))
+
+;;verilog xref config
+(setq verilog-ext-tags-backend 'tree-sitter)
+
+;; sintax highlight config
+(set-face-attribute 'verilog-ts-font-lock-grouping-keywords-face nil :foreground "dark olive green")
+(set-face-attribute 'verilog-ts-font-lock-punctuation-face nil       :foreground "burlywood")
+(set-face-attribute 'verilog-ts-font-lock-operator-face nil          :foreground "burlywood" :weight 'extra-bold)
+(set-face-attribute 'verilog-ts-font-lock-brackets-face nil          :foreground "goldenrod")
+(set-face-attribute 'verilog-ts-font-lock-parenthesis-face nil       :foreground "dark goldenrod")
+(set-face-attribute 'verilog-ts-font-lock-curly-braces-face nil      :foreground "DarkGoldenrod2")
+(set-face-attribute 'verilog-ts-font-lock-port-connection-face nil   :foreground "bisque2")
+(set-face-attribute 'verilog-ts-font-lock-dot-name-face nil          :foreground "gray70")
+(set-face-attribute 'verilog-ts-font-lock-brackets-content-face nil  :foreground "yellow green")
+(set-face-attribute 'verilog-ts-font-lock-width-num-face nil         :foreground "chartreuse2")
+(set-face-attribute 'verilog-ts-font-lock-width-type-face nil        :foreground "sea green" :weight 'bold)
+(set-face-attribute 'verilog-ts-font-lock-module-face nil            :foreground "green1")
+(set-face-attribute 'verilog-ts-font-lock-instance-face nil          :foreground "medium spring green")
+(set-face-attribute 'verilog-ts-font-lock-time-event-face nil        :foreground "deep sky blue" :weight 'bold)
+(set-face-attribute 'verilog-ts-font-lock-time-unit-face nil         :foreground "light steel blue")
+(set-face-attribute 'verilog-ts-font-lock-preprocessor-face nil      :foreground "pale goldenrod")
+(set-face-attribute 'verilog-ts-font-lock-modport-face nil           :foreground "light blue")
+(set-face-attribute 'verilog-ts-font-lock-direction-face nil         :foreground "RosyBrown3")
+(set-face-attribute 'verilog-ts-font-lock-translate-off-face nil     :background "gray20" :slant 'italic)
+(set-face-attribute 'verilog-ts-font-lock-attribute-face nil         :foreground "orange1")
