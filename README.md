@@ -1,4 +1,4 @@
-M-x straight-freeze-versionsでlockファイルを生成
+oM-x straight-freeze-versionsでlockファイルを生成
 
 インストールがひつようなもの
 emacs-mozc
