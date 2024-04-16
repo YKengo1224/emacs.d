@@ -281,6 +281,18 @@
   (bind-key "C-q" 'neotree-toggle)
   )
 
+
+;;emacs中でのterminal
+(use-package vterm
+  :ensure t)
+
+
+(use-package magit
+  :ensure t
+  :bind
+  (("C-x g" . magit-status))
+  )
+
 ;;行末、行頭への移動を拡張
 (use-package mwim
   :ensure t
@@ -399,7 +411,6 @@
    )
   :init
   (add-hook 'python-mode-common-hook 'flymake-mode)
-  (global-flymake-mode t)
   :commands
   flymake-mode
   )
