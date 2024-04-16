@@ -286,6 +286,21 @@
 (use-package vterm
   :ensure t)
 
+;;vtermのトグルの設定
+(use-package vterm-toggle
+  :ensure t
+  :bind
+  (("C-`" . vterm-toggle))
+  :config
+  ;; Show vterm buffer in the window located at bottom
+  (add-to-list 'display-buffer-alist
+               '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
+                 (display-buffer-reuse-window display-buffer-in-direction)
+                 (direction . bottom)
+                 (reusable-frames . visible)
+                 (window-height . 0.4)))
+  )
+
 
 (use-package magit
   :ensure t
