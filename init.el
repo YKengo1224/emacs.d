@@ -269,6 +269,16 @@
   (setq auto-package-update-interval 1)
   (auto-package-update-maybe))
 
+
+(use-package emacs-rotate
+    :straight '(emacs-rotate
+              :type git
+              :host github
+              :repo "daichirata/emacs-rotate")
+    :ensure t
+    )
+
+
 ;;neotree(ファイルブラウザを表示)
 (use-package neotree
   :ensure t
@@ -426,6 +436,7 @@
    )
   :init
   (add-hook 'python-mode-common-hook 'flymake-mode)
+  (add-hook 'verilog-mode-hook 'flymake-mode)
   :commands
   flymake-mode
   )
