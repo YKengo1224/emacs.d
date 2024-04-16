@@ -1,3 +1,4 @@
+
 ;;; package --- Summary
 ;;; Commentary:
 ;;; General
@@ -271,13 +272,12 @@
 
 
 (use-package emacs-rotate
-    :straight '(emacs-rotate
+  :straight '(emacs-rotate
               :type git
               :host github
               :repo "daichirata/emacs-rotate")
-    :ensure t
-    )
-
+  :ensure t
+  )
 
 ;;neotree(ファイルブラウザを表示)
 (use-package neotree
