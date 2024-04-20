@@ -26,6 +26,23 @@
 ;;画面最大化
 (push '(fullscreen . maximized) default-frame-alist)
 
+;; 背景を透明化
+;; Color
+(if window-system (progn
+    (set-background-color "Black")
+    (set-foreground-color "LightGray")
+    (set-cursor-color "Gray")
+    (set-frame-parameter nil 'alpha 90) ;透明度
+    ))
+
+;; 透明度を変更するコマンド M-x set-alpha
+;; http://qiita.com/marcy@github/items/ba0d018a03381a964f24
+(defun set-alpha (alpha-num)
+  "set frame parameter 'alpha"
+  (interactive "nAlpha: ")
+  (set-frame-parameter nil 'alpha (cons alpha-num '(90))))
+
+
 ;;括弧などのオートペアリングを有効
 (electric-pair-mode t)
 
