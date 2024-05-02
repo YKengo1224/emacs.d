@@ -61,10 +61,7 @@
 
 (setq initial-scratch-message nil)
 
-;;org-mode 設定
-(global-set-key (kbd "C-c l") #'org-store-link)
-(global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture)
+
 
 
 ;; Added by Package.el.  This must come before configurations of
@@ -290,6 +287,32 @@
   :config
   (setq auto-package-update-interval 1)
   (auto-package-update-maybe))
+
+
+;;org-mode 設定
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
+
+(setq org-directory '("/home/kengo/work/org"))
+(setq org-agenda-files '("/home/kengo/work/org/agenda/"))
+(setq org-todo-keywords
+      '((sequence "TODO" "READY" "DOING" "DONE")))
+(setq org-capture-templates
+      '(("d" "Weekdays TODO" entry (file "/home/kengo/work/org/agenda/todo.org") "%[~/.emacs.d/org-templates/weekdays-todo.org]" :prepend t)
+        ("t" "Todo" entry (file+headline "/home/kengo/work/org/agenda/todo.org" "■Capture")
+         "* TODO %? (wrote on %U)")
+        ("k" "Knowledge" entry (file+headline "/home/kengo/work/org/knowlege.org" "TOP")
+         "* %?\n  # Wrote on %U)")))
+
+
+
+;;(setq )
+
+
+
+
+
 
 ;;neotree(ファイルブラウザを表示)
 (use-package neotree
