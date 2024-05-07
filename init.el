@@ -308,16 +308,16 @@
 
 
 
-(use-package emacs-rotate
-  :straight '(emacs-rotate
-              :type git
-              :host github
-              :repo "daichirata/emacs-rotate")
+(use-package rotate
+  ;; :straight '(emacs-rotate
+  ;;             :type git
+  ;;             :host github
+  ;;             :repo "daichirata/emacs-rotate")
   :ensure t
   )
 
 
-;;neotree(ファイルブラウザを表示)
+;;Neotree(ファイルブラウザを表示)
 (use-package neotree
   :ensure t
   :init
