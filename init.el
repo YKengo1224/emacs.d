@@ -36,6 +36,11 @@
     (set-frame-parameter nil 'alpha 90) ;透明度
     ))
 
+;; 初期フレームの設定
+;;(add-hook 'window-setup-hook 'my/setup-frame)
+
+
+
 ;; 透明度を変更するコマンド M-x set-alpha
 ;; http://qiita.com/marcy@github/items/ba0d018a03381a964f24
 (defun set-alpha (alpha-num)
@@ -524,7 +529,10 @@
   )
 
 
-
+;;device tree setting
+(use-package dts-mode
+  :ensure t
+  )
 
 
 ;;python setting
