@@ -5,7 +5,7 @@ emacs-mozc
 emacs-mozc-bin
 three-sitter
 各言語のLSP
-
+verible(verilogのフォーマッター)
 
 verilogモードのキーバインド
 C-c C-l   format
