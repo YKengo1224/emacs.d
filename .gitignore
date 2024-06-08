@@ -1,0 +1,16 @@
+*
+
+!.gitignore
+!init.el
+!auto-save-files/
+!auto-save-files/.gitdummy
+!backup-files/
+!backup-files/.gitdummy
+!README.md
+!org-templates/
+!org-templates/*
+!straight
+!straight/versions/default.el
+!straight/versions/
+!tree-sitter
+!tree-sitter/libtree-sitter-verilog.so
