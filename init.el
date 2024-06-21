@@ -300,13 +300,14 @@
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
 
+(setq org-log-done 'time);;TODOをDONEした際に、終了時刻を自動的に記録
 (setq org-directory '("/home/kengo/work/org"))
 (setq org-agenda-files '("/home/kengo/work/org/agenda/"))
 (setq org-todo-keywords
-      '((sequence "TODO" "READY" "DOING" "DONE")))
+      '((sequence "TODO(t)" "READY(r)" "DOING(w)" "|" "DONE(d)")))
 (setq org-capture-templates
       '(("d" "Weekdays TODO" entry (file "/home/kengo/work/org/agenda/todo.org") "%[~/.emacs.d/org-templates/weekdays-todo.org]" :prepend t)
-        ("t" "Todo" entry (file+headline "/home/kengo/work/org/agenda/todo.org" "■Capture")
+        ("t" "Todo" entry (file+headline "/home/kengo/work/org/agenda/todo.org" "INBOX")
          "* TODO %? (wrote on %U)")
         ("k" "Knowledge" entry (file+headline "/home/kengo/work/org/knowlege.org" "TOP")
          "* %?\n  # Wrote on %U)")))
