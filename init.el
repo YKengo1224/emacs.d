@@ -370,6 +370,22 @@
    ("C-e" . mwim-end-of-code-or-line))
   )
 
+;;DeepLを使う
+
+;; (use-package go-translate
+;;   :ensure t
+;;   :bind
+;;   ("C-c t" . gt-do-translate)
+;;   :custom
+;;   (gt-langs '(("en" "ja") ("ja" "en")))
+;;   (gt-default-translator
+;;    (gt-translator
+;;     :taker(gt-taker :langs '(en ja) :text 'buffer :pick 'paragraph)
+;;     :engines(list
+;;              (gt-deepl-engine
+;;               :key "404cffca-7cec-cfc4-eabc-2477644830d2:fx"))
+;;     :render(gt-buffer-render))))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -446,9 +462,6 @@
   (global-flycheck-mode t)
   )
 
-(provide 'init)
-;;; init.el ends here
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;LSP setting
@@ -462,7 +475,7 @@
   (add-to-list 'eglot-server-programs '(c++-mode "ccls"))
   (add-to-list 'eglot-server-programs '(python-mode "pylsp"))
   (add-to-list 'eglot-server-programs '(rustic "rust-analyzer"))
-  (add-to-list 'eglot-server-programs '(verilog-mode "svls"))
+  ;(add-to-list 'eglot-server-programs '(verilog-mode "svls"))
   :hook
   (python-mode . eglot-ensure)
   (c-mode . eglot-ensure)
@@ -480,7 +493,7 @@
    )
   :init
   (add-hook 'python-mode-common-hook 'flymake-mode)
-  (add-hook 'verilog-mode-hook 'flymake-mode)
+  ;(add-hook 'verilog-mode-hook 'flymake-mode)
   :commands
   flymake-mode
   )
@@ -557,8 +570,8 @@
 (use-package verilog-mode
   :ensure t)
 
-;;https://github.com/gmlarumbe/verilog-ts-mode
-;;M-x で
+;; https://github.com/gmlarumbe/verilog-ts-mode
+;; M-x で
 (use-package verilog-ts-mode
   :ensure t
   )
@@ -581,7 +594,7 @@
           ;lsp
           ;lsp-bridge
           ;lspce
-          flycheck
+          ;flycheck
           beautify
           navigation
           template
@@ -622,3 +635,19 @@
 (set-face-attribute 'verilog-ts-font-lock-direction-face nil         :foreground "RosyBrown3")
 (set-face-attribute 'verilog-ts-font-lock-translate-off-face nil     :background "gray20" :slant 'italic)
 (set-face-attribute 'verilog-ts-font-lock-attribute-face nil         :foreground "orange1")
+
+
+(setq verilog-ext-project-alist
+      `(("jpeg-encoder"
+         :root "/home/kengo/work/univ/UMV/jpeg-codec-2024/jpeg-encoder"
+         :files ("rtl/modules/*",
+                 "rtl/packages/*",
+                 "rtl/interfaces/*"
+                 )
+         :dirs("tb")
+         :ignore-files ("src/uart/tb/fifo_generator_0_sim_netlist.v")
+         :compile-cmd "make sim" ; command used to compile current project
+         )))    ; list of dirs to look for include directories or libraries
+
+(provide 'init)
+;;; init.el ends here
