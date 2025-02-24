@@ -370,21 +370,6 @@
    ("C-e" . mwim-end-of-code-or-line))
   )
 
-;;DeepLを使う
-
-;; (use-package go-translate
-;;   :ensure t
-;;   :bind
-;;   ("C-c t" . gt-do-translate)
-;;   :custom
-;;   (gt-langs '(("en" "ja") ("ja" "en")))
-;;   (gt-default-translator
-;;    (gt-translator
-;;     :taker(gt-taker :langs '(en ja) :text 'buffer :pick 'paragraph)
-;;     :engines(list
-;;              (gt-deepl-engine
-;;               :key "404cffca-7cec-cfc4-eabc-2477644830d2:fx"))
-;;     :render(gt-buffer-render))))
 
 
 
